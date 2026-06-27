@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elk Season Readiness — Tracker</title>
+<style>
+  :root{
+    --accent:#2E5339; --accent-light:#E8EFE9; --grey:#666; --bg:#FAFAF8; --card:#FFFFFF; --border:#DDE3DE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg); color:#222; padding-bottom:60px;
+  }
+  header{
+    background:var(--accent); color:#fff; padding:28px 20px 22px; text-align:center;
+    position:sticky; top:0; z-index:10;
+  }
+  header h1{margin:0; font-size:1.5rem; letter-spacing:0.5px;}
+  header p{margin:6px 0 0; font-size:0.9rem; opacity:0.85;}
+  .overall-progress{
+    max-width:600px; margin:14px auto 0; background:rgba(255,255,255,0.25); border-radius:8px; height:10px; overflow:hidden;
+  }
+  .overall-fill{display:block; height:100%; background:#fff; width:0%; transition:width 0.3s;}
+  .overall-label{font-size:0.78rem; margin-top:6px; opacity:0.9;}
+  main{max-width:720px; margin:0 auto; padding:16px;}
+  .week{
+    background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:18px; padding:16px 16px 8px; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+  .week-head h2{margin:0; font-size:1.15rem; color:var(--accent); display:inline;}
+  .week-head .dates{font-size:0.85rem; color:var(--grey); font-weight:normal; margin-left:8px;}
+  .phase-tag{display:inline-block; font-size:0.72rem; color:var(--accent); background:var(--accent-light); border-radius:5px; padding:2px 8px; margin:6px 0 4px;}
+  .week-progress{height:6px; background:var(--accent-light); border-radius:4px; overflow:hidden; margin:6px 0 10px;}
+  .prog-fill{display:block; height:100%; background:var(--accent); width:0%; transition:width 0.3s;}
+  .theme{font-size:0.88rem; color:var(--grey); font-style:italic; margin:0 0 12px;}
+  .day-row{
+    display:flex; gap:10px; padding:10px 0; border-top:1px solid var(--border);
+  }
+  .day-row:first-of-type{border-top:none;}
+  .day-check{flex-shrink:0; padding-top:3px;}
+  .day-check input{display:none;}
+  .checkmark{
+    width:24px; height:24px; border:2px solid var(--accent); border-radius:6px; display:block; position:relative; cursor:pointer;
+  }
+  .day-check input:checked + .checkmark{background:var(--accent);}
+  .day-check input:checked + .checkmark::after{
+    content:""; position:absolute; left:7px; top:2px; width:6px; height:11px; border:solid white; border-width:0 2px 2px 0; transform:rotate(45deg);
+  }
+  .day-content{flex:1; min-width:0;}
+  .day-row.completed .day-focus, .day-row.completed .day-detail{opacity:0.55; text-decoration:line-through;}
+  .day-head{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+  .day-label{font-size:0.75rem; font-weight:700; color:#fff; background:var(--accent); border-radius:4px; padding:1px 7px;}
+  .day-focus{font-weight:600; font-size:0.95rem;}
+  .day-detail{font-size:0.85rem; color:#444; margin-top:4px; line-height:1.4;}
+  .day-notes{
+    width:100%; margin-top:8px; border:1px solid var(--border); border-radius:7px; padding:8px; font-size:0.85rem;
+    font-family:inherit; resize:vertical; min-height:38px; background:#FCFCFB;
+  }
+  .day-notes:focus{outline:1px solid var(--accent); background:#fff;}
+  footer{text-align:center; font-size:0.78rem; color:var(--grey); padding:20px;}
+  .save-toast{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:#fff;
+    padding:7px 16px; border-radius:20px; font-size:0.8rem; opacity:0; transition:all 0.25s; pointer-events:none;
+  }
+  .save-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toolbar{max-width:720px; margin:0 auto; padding:0 16px 6px; display:flex; justify-content:flex-end;}
+  .reset-btn{
+    font-size:0.75rem; color:var(--grey); background:none; border:1px solid var(--border); border-radius:6px; padding:4px 10px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Elk Season Readiness</h1>
+  <p>14-Week Plan · June 29 – October 1, 2026</p>
+  <div class="overall-progress"><span class="overall-fill" id="overall-fill"></span></div>
+  <div class="overall-label" id="overall-label">0 of 98 sessions logged</div>
+</header>
+<div class="toolbar"><button class="reset-btn" onclick="resetAll()">Reset all progress</button></div>
+<main>
+
+    <section class="week" id="week1">
+      <div class="week-head">
+        <h2>Week 1 <span class="dates">Jun 29 – Jul 5</span></h2>
+        <div class="phase-tag">Phase 1: Foundation</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w1"></span></div>
+      </div>
+      <p class="theme">Establish baseline intervals, begin glute re-patterning, light movement skill work.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min easy. 5 x 3 min @ 90–92% HRmax, incline 8%, 3 min easy recovery between. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w1d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Glute activation (banded clamshells/monster walks, 2 min) → RDLs 4x8 (moderate) → Hip thrusts 3x10 → Reverse lunges, bodyweight, 3x10/leg → Lateral band walks 3x15 steps/side → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w1d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">40 min flat run or easy incline walk. Conversational pace.</div>
+          <textarea class="day-notes" data-key="w1d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain</span>
+          </div>
+          <div class="day-detail">Kneeling-to-standing get-ups, bodyweight, slow, 3x5/side (fresh) → Trap bar deadlifts 4x6 → Step-ups (12" box) 3x10/leg → Side plank with reach 3x8/side → Suitcase carries 3x40m/side.</div>
+          <textarea class="day-notes" data-key="w1d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 15 min @ comfortably-hard (75–78% HRmax), 6% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w1d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">60 min. Alternate incline 0–8% every 10 min. No pack yet.</div>
+          <textarea class="day-notes" data-key="w1d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w1d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w1d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week2">
+      <div class="week-head">
+        <h2>Week 2 <span class="dates">Jul 6 – Jul 12</span></h2>
+        <div class="phase-tag">Phase 1: Foundation</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w2"></span></div>
+      </div>
+      <p class="theme">Slight volume increase. Add light pack weight to the long session.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 5 x 3 min @ 90–92% HRmax, incline 8–9%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w2d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x8 (slightly heavier) → Hip thrusts 3x10 → Reverse lunges 3x10/leg, add light dumbbells → Lateral band walks 3x15/side → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w2d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">40–45 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w2d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain</span>
+          </div>
+          <div class="day-detail">Get-ups, bodyweight, 3x6/side → Trap bar deadlifts 4x6 → Step-ups 3x10/leg, add dumbbells → Side plank with reach 3x8/side → Suitcase carries 3x40m/side.</div>
+          <textarea class="day-notes" data-key="w2d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 18 min @ 75–78% HRmax, 6–7% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w2d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">70 min, rolling incline 0–8%. Add 10–15 lb pack for the back 30 min.</div>
+          <textarea class="day-notes" data-key="w2d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w2d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w2d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week3">
+      <div class="week-head">
+        <h2>Week 3 <span class="dates">Jul 13 – Jul 19</span></h2>
+        <div class="phase-tag">Phase 1: Foundation</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w3"></span></div>
+      </div>
+      <p class="theme">Push interval duration slightly. Introduce forward lunges.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 6 x 3 min @ 90–93% HRmax, incline 9%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w3d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x8 → Hip thrusts 3x10, add load → Forward lunges (introducing) 3x8/leg, light → Lateral lunges 3x10/leg, bodyweight → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w3d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w3d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain</span>
+          </div>
+          <div class="day-detail">Get-ups, add light kettlebell, 3x6/side → Trap bar deadlifts 4x6, add load → Step-ups 3x10/leg, heavier → Side plank with reach 3x10/side → Suitcase carries 3x40m/side, heavier.</div>
+          <textarea class="day-notes" data-key="w3d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 20 min @ 76–80% HRmax, 7% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w3d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">75 min, rolling incline 0–10%. 15–20 lb pack for full session.</div>
+          <textarea class="day-notes" data-key="w3d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w3d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w3d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week4">
+      <div class="week-head">
+        <h2>Week 4 <span class="dates">Jul 20 – Jul 26</span></h2>
+        <div class="phase-tag">Phase 1: Foundation (Deload)</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w4"></span></div>
+      </div>
+      <p class="theme">Deload week. Cut volume ~30% to absorb adaptation before Phase 2.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals (reduced)</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 4 x 3 min @ 88–90% HRmax, incline 8%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w4d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength (light)</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 3x8, lighter → Hip thrusts 2x10 → Forward lunges 2x8/leg → Lateral lunges 2x10/leg → Single-leg glute bridges 2x12/leg.</div>
+          <textarea class="day-notes" data-key="w4d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">30 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w4d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill (light)</span>
+          </div>
+          <div class="day-detail">Get-ups 3x6/side, light → Trap bar deadlifts 3x6, lighter → Step-ups 2x10/leg → Side plank 2x10/side.</div>
+          <textarea class="day-notes" data-key="w4d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline (easy)</span>
+          </div>
+          <div class="day-detail">5 min warmup. 12 min @ 72–75% HRmax, 5% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w4d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic (shortened)</span>
+          </div>
+          <div class="day-detail">45 min, flat to moderate incline, no pack. Recovery-focused.</div>
+          <textarea class="day-notes" data-key="w4d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w4d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w4d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week5">
+      <div class="week-head">
+        <h2>Week 5 <span class="dates">Jul 27 – Aug 2</span></h2>
+        <div class="phase-tag">Phase 2: Build</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w5"></span></div>
+      </div>
+      <p class="theme">Step up interval intensity. Begin layering pack weight into strength days.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 6 x 4 min @ 90–93% HRmax, incline 9–10%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w5d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x6, heavier → Hip thrusts 3x8, heavier → Weighted walking lunges 3x10/leg (10–15 lb) → Lateral lunges, weighted, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w5d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45–50 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w5d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain + Pack</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side, heavier → Trap bar deadlifts 4x5, heavier → Step-ups 3x10/leg, weighted → Side plank 3x10/side → Loaded carries 3x50m/side, 15 lb.</div>
+          <textarea class="day-notes" data-key="w5d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 20 min @ 78–82% HRmax, 7–8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w5d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">80 min, rolling incline 0–12%. Pack weight 15 lb full session.</div>
+          <textarea class="day-notes" data-key="w5d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w5d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w5d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week6">
+      <div class="week-head">
+        <h2>Week 6 <span class="dates">Aug 3 – Aug 9</span></h2>
+        <div class="phase-tag">Phase 2: Build</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w6"></span></div>
+      </div>
+      <p class="theme">Introduce 30/30s for top-end VO2max stimulus. Increase loaded carry distance.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 6 x 4 min @ 90–93% HRmax, incline 9–10%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w6d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x6, heavier → Hip thrusts 3x8, heavier → Weighted walking lunges 3x10/leg (15–20 lb) → Lateral lunges, weighted, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w6d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45–50 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w6d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain + Pack</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side, heavier → Trap bar deadlifts 4x5, heavier → Step-ups 3x10/leg, weighted → Side plank 3x10/side → Loaded carries 3x50m/side, 20 lb.</div>
+          <textarea class="day-notes" data-key="w6d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 22 min @ 78–82% HRmax, 7–8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w6d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">85 min, rolling incline 0–12%. Pack weight 20 lb full session.</div>
+          <textarea class="day-notes" data-key="w6d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w6d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w6d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week7">
+      <div class="week-head">
+        <h2>Week 7 <span class="dates">Aug 10 – Aug 16</span></h2>
+        <div class="phase-tag">Phase 2: Build</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w7"></span></div>
+      </div>
+      <p class="theme">Heaviest strength loading of this phase. Pack weight climbing toward 25-30 lb.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 5 x 4 min @ 91–94% HRmax + 4 x 30/30 finisher, incline 9–11%. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w7d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x6, heavier → Hip thrusts 3x8, heavier → Weighted walking lunges 3x10/leg (20–25 lb) → Lateral lunges, weighted, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w7d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45–50 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w7d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain + Pack</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side, heavier → Trap bar deadlifts 4x5, heavier → Step-ups 3x10/leg, weighted → Side plank 3x10/side → Loaded carries 3x50m/side, 25 lb.</div>
+          <textarea class="day-notes" data-key="w7d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 24 min @ 78–82% HRmax, 7–8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w7d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">90 min, rolling incline 0–12%. Pack weight 25 lb full session.</div>
+          <textarea class="day-notes" data-key="w7d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w7d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w7d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week8">
+      <div class="week-head">
+        <h2>Week 8 <span class="dates">Aug 17 – Aug 23</span></h2>
+        <div class="phase-tag">Phase 2: Build</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w8"></span></div>
+      </div>
+      <p class="theme">Longest aerobic session yet. Begin lateral/eccentric-specific accessory work.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 5 x 4 min @ 91–94% HRmax + 4 x 30/30 finisher, incline 9–11%. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w8d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x6, heavier → Hip thrusts 3x8, heavier → Weighted walking lunges 3x10/leg (25–30 lb) → Lateral lunges, weighted, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w8d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45–50 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w8d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Posterior Chain + Pack</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side, heavier → Trap bar deadlifts 4x5, heavier → Step-ups 3x10/leg, weighted → Side plank 3x10/side → Loaded carries 3x50m/side, 30 lb.</div>
+          <textarea class="day-notes" data-key="w8d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 26 min @ 78–82% HRmax, 7–8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w8d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim</span>
+          </div>
+          <div class="day-detail">95 min, rolling incline 0–12%. Pack weight 30 lb full session.</div>
+          <textarea class="day-notes" data-key="w8d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w8d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w8d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week9">
+      <div class="week-head">
+        <h2>Week 9 <span class="dates">Aug 24 – Aug 30</span></h2>
+        <div class="phase-tag">Phase 2: Build (Deload)</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w9"></span></div>
+      </div>
+      <p class="theme">Deload — absorb Phase 2 adaptations before peak phase.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals (reduced)</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 4 x 3 min @ 88–90% HRmax, incline 8%. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w9d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength (light)</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 3x6, lighter → Hip thrusts 2x8 → Weighted walking lunges 2x10/leg, light → Lateral lunges 2x10/leg.</div>
+          <textarea class="day-notes" data-key="w9d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">35 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w9d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill (light)</span>
+          </div>
+          <div class="day-detail">Get-ups 2x6/side → Trap bar deadlifts 3x5, lighter → Step-ups 2x10/leg, bodyweight.</div>
+          <textarea class="day-notes" data-key="w9d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline (easy)</span>
+          </div>
+          <div class="day-detail">5 min warmup. 12 min @ 73–76% HRmax, 5% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w9d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic (shortened)</span>
+          </div>
+          <div class="day-detail">50 min, light incline, 10–15 lb pack.</div>
+          <textarea class="day-notes" data-key="w9d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w9d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w9d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week10">
+      <div class="week-head">
+        <h2>Week 10 <span class="dates">Aug 31 – Sep 6</span></h2>
+        <div class="phase-tag">Phase 3: Peak</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w10"></span></div>
+      </div>
+      <p class="theme">Heaviest pack loads, hardest intervals. This week sets your ceiling.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals — Mixed</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 6 x 4 min @ 92–95% HRmax, incline 10–11%, 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w10d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength — Peak Load</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x5, heaviest of plan → Hip thrusts 3x6, heavy → Weighted walking lunges 3x10/leg (30 lb) → Lateral lunges with pack, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w10d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45 min flat run, easy. Protect this day.</div>
+          <textarea class="day-notes" data-key="w10d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Eccentric/Lateral Work</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side → Trap bar deadlifts 4x5 → Step-downs off box, slow 4-count eccentric, 3x8/leg → Lateral step-downs 3x8/leg → Loaded carries 3x50m/side, 35 lb.</div>
+          <textarea class="day-notes" data-key="w10d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 24 min @ 80–84% HRmax, 8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w10d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim — Peak</span>
+          </div>
+          <div class="day-detail">100 min, rolling incline 0–14%. Pack weight 35 lb full session — simulates a pack-out day.</div>
+          <textarea class="day-notes" data-key="w10d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w10d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w10d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week11">
+      <div class="week-head">
+        <h2>Week 11 <span class="dates">Sep 7 – Sep 13</span></h2>
+        <div class="phase-tag">Phase 3: Peak</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w11"></span></div>
+      </div>
+      <p class="theme">Race-specific mixed intervals. Eccentric/downhill-simulation work added.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals — Mixed</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 3 x 5 min @ 90–93% + 5 x 1 min @ 95%+ (1 min recovery), incline 9–11%. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w11d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength — Peak Load</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x5, heaviest of plan → Hip thrusts 3x6, heavy → Weighted walking lunges 3x10/leg (35 lb) → Lateral lunges with pack, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w11d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45 min flat run, easy. Protect this day.</div>
+          <textarea class="day-notes" data-key="w11d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Eccentric/Lateral Work</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side → Trap bar deadlifts 4x5 → Step-downs off box, slow 4-count eccentric, 3x8/leg → Lateral step-downs 3x8/leg → Loaded carries 3x50m/side, 40 lb.</div>
+          <textarea class="day-notes" data-key="w11d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 22 min @ 80–84% HRmax, 8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w11d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim — Peak</span>
+          </div>
+          <div class="day-detail">110 min, rolling incline 0–14%. Pack weight 40 lb full session — simulates a pack-out day.</div>
+          <textarea class="day-notes" data-key="w11d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w11d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w11d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week12">
+      <div class="week-head">
+        <h2>Week 12 <span class="dates">Sep 14 – Sep 20</span></h2>
+        <div class="phase-tag">Phase 3: Peak</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w12"></span></div>
+      </div>
+      <p class="theme">Final hard week — peak long session, then begin pulling back.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals — Mixed</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 5 x 4 min @ 92–94% HRmax, incline 10%. Cooldown 5 min. (Last hard interval session before taper.)</div>
+          <textarea class="day-notes" data-key="w12d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength — Peak Load</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 4x5, heaviest of plan → Hip thrusts 3x6, heavy → Weighted walking lunges 3x10/leg (40 lb) → Lateral lunges with pack, 3x10/leg → Single-leg glute bridges 3x12/leg.</div>
+          <textarea class="day-notes" data-key="w12d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">45 min flat run, easy. Protect this day.</div>
+          <textarea class="day-notes" data-key="w12d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill + Eccentric/Lateral Work</span>
+          </div>
+          <div class="day-detail">Get-ups, kettlebell, 3x6/side → Trap bar deadlifts 4x5 → Step-downs off box, slow 4-count eccentric, 3x8/leg → Lateral step-downs 3x8/leg → Loaded carries 3x50m/side, 45 lb.</div>
+          <textarea class="day-notes" data-key="w12d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline</span>
+          </div>
+          <div class="day-detail">5 min warmup. 20 min @ 80–84% HRmax, 8% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w12d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Long Aerobic / Terrain Sim — Peak</span>
+          </div>
+          <div class="day-detail">90 min, rolling incline 0–12%. Pack 45 lb. Last long peak session before taper.</div>
+          <textarea class="day-notes" data-key="w12d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w12d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w12d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week13">
+      <div class="week-head">
+        <h2>Week 13 <span class="dates">Sep 21 – Sep 27</span></h2>
+        <div class="phase-tag">Phase 4: Taper</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w13"></span></div>
+      </div>
+      <p class="theme">Cut volume ~40%. Keep intensity sharp.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals (sharpening)</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 4 x 3 min @ 90–92% HRmax, incline 8–9%, full 3 min recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w13d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Glute-Biased Lower Strength (reduced)</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 3x5, moderate → Hip thrusts 2x8 → Walking lunges 2x10/leg, 20 lb → Lateral lunges 2x10/leg.</div>
+          <textarea class="day-notes" data-key="w13d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">35 min flat run, easy.</div>
+          <textarea class="day-notes" data-key="w13d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill (maintenance)</span>
+          </div>
+          <div class="day-detail">Get-ups 2x6/side → Trap bar deadlifts 3x5, moderate → Step-downs 2x8/leg → Loaded carries 2x50m/side, 25 lb.</div>
+          <textarea class="day-notes" data-key="w13d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Tempo on Incline (short)</span>
+          </div>
+          <div class="day-detail">5 min warmup. 14 min @ 76–80% HRmax, 7% incline. 5 min cooldown.</div>
+          <textarea class="day-notes" data-key="w13d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Moderate Aerobic</span>
+          </div>
+          <div class="day-detail">60 min, rolling incline 0–10%. Pack weight 20 lb.</div>
+          <textarea class="day-notes" data-key="w13d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w13d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w13d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+    <section class="week" id="week14">
+      <div class="week-head">
+        <h2>Week 14 <span class="dates">Sep 28 – Oct 4</span></h2>
+        <div class="phase-tag">Phase 4: Taper</div>
+        <div class="week-progress"><span class="prog-fill" id="prog-w14"></span></div>
+      </div>
+      <p class="theme">Final week. Stay sharp, arrive fresh for Oct 1.</p>
+      
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d0_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Tue</span>
+            <span class="day-focus">VO2max Intervals (short, sharp)</span>
+          </div>
+          <div class="day-detail">Warm up 10 min. 3 x 3 min @ 90% HRmax, incline 8%, full recovery. Cooldown 5 min.</div>
+          <textarea class="day-notes" data-key="w14d0_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d1_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Wed</span>
+            <span class="day-focus">Light Strength (maintenance)</span>
+          </div>
+          <div class="day-detail">Activation drill → RDLs 2x6, light → Hip thrusts 2x8, light → Bodyweight reverse lunges 2x10/leg.</div>
+          <textarea class="day-notes" data-key="w14d1_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d2_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Thu</span>
+            <span class="day-focus">Easy Aerobic — Zone 2</span>
+          </div>
+          <div class="day-detail">25 min flat run, very easy.</div>
+          <textarea class="day-notes" data-key="w14d2_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d3_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Fri</span>
+            <span class="day-focus">Movement Skill (very light)</span>
+          </div>
+          <div class="day-detail">Get-ups 2x5/side, bodyweight → Light carries 2x40m/side, 15 lb.</div>
+          <textarea class="day-notes" data-key="w14d3_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d4_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sat</span>
+            <span class="day-focus">Rest or Easy Walk</span>
+          </div>
+          <div class="day-detail">Full rest, or 20 min easy walk + mobility.</div>
+          <textarea class="day-notes" data-key="w14d4_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d5_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Sun</span>
+            <span class="day-focus">Short Easy Aerobic + Pack Check</span>
+          </div>
+          <div class="day-detail">30–40 min easy, light pack (15 lb) to check gear and footwear. Mon–Wed: rest, hydrate, eat well, sleep. Oct 1: ready.</div>
+          <textarea class="day-notes" data-key="w14d5_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+      <div class="day-row">
+        <label class="day-check">
+          <input type="checkbox" data-key="w14d6_done" class="done-box">
+          <span class="checkmark"></span>
+        </label>
+        <div class="day-content">
+          <div class="day-head">
+            <span class="day-label">Mon</span>
+            <span class="day-focus">Rest</span>
+          </div>
+          <div class="day-detail">Full rest or 20–30 min easy walk + mobility. Foam roll quads/hips, hip flexor stretch, couch stretch.</div>
+          <textarea class="day-notes" data-key="w14d6_notes" placeholder="Notes — how it felt, actual times/weights, anything to adjust..."></textarea>
+        </div>
+      </div>
+    </section>
+</main>
+<footer>Saved automatically on this device/browser. Tap a checkbox to mark a session done — your notes save as you type.</footer>
+<div class="save-toast" id="toast">Saved</div>
+
+<script>
+const STORAGE_KEY = "elkPlanTrackerV1";
+
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveData(data){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast();
+}
+let toastTimer;
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 900);
+}
+
+function updateProgress(){
+  const weeks = document.querySelectorAll('.week');
+  let totalDone = 0, totalAll = 0;
+  weeks.forEach(w=>{
+    const boxes = w.querySelectorAll('.done-box');
+    const done = [...boxes].filter(b=>b.checked).length;
+    totalDone += done; totalAll += boxes.length;
+    const pct = boxes.length ? (done/boxes.length*100) : 0;
+    const fill = w.querySelector('.prog-fill');
+    if(fill) fill.style.width = pct + '%';
+  });
+  document.getElementById('overall-fill').style.width = (totalAll? totalDone/totalAll*100 : 0) + '%';
+  document.getElementById('overall-label').textContent = totalDone + ' of ' + totalAll + ' sessions logged';
+}
+
+function init(){
+  const data = loadData();
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const key = el.getAttribute('data-key');
+    if(el.classList.contains('done-box')){
+      el.checked = !!data[key];
+      if(el.checked) el.closest('.day-row').classList.add('completed');
+      el.addEventListener('change', ()=>{
+        const d = loadData();
+        d[key] = el.checked;
+        saveData(d);
+        el.closest('.day-row').classList.toggle('completed', el.checked);
+        updateProgress();
+      });
+    } else {
+      el.value = data[key] || '';
+      el.addEventListener('input', ()=>{
+        const d = loadData();
+        d[key] = el.value;
+        saveData(d);
+      });
+    }
+  });
+  updateProgress();
+}
+
+function resetAll(){
+  if(confirm('This will clear all checkmarks and notes. Are you sure?')){
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
